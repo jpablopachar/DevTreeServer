@@ -1,15 +1,10 @@
-import { Request, Response } from 'express'
-import { v4 as uuid } from 'uuid'
-
-interface CustomRequest extends Request {
-  user: IUser
-}
-
 import { UploadApiResponse } from 'cloudinary'
+import { Request, Response } from 'express'
 import { Result, ValidationError, validationResult } from 'express-validator'
 import formidable from 'formidable'
 import IncomingForm from 'formidable/Formidable'
 import slug from 'slug'
+import { v4 as uuid } from 'uuid'
 import cloudinary from '../config/cloudinary'
 import User, { IUser } from '../models/user'
 import {
@@ -19,22 +14,26 @@ import {
   responseReturn,
 } from '../utils'
 
+interface CustomRequest extends Request {
+  user: IUser
+}
+
 export const createAccount = async (req: Request, res: Response) => {
   try {
     const { email, password, handle: rawHandle } = req.body
 
     if (!email || !password || !rawHandle)
-      return responseReturn(res, 400, {
+      responseReturn(res, 400, {
         error: 'Email, password and handle are required',
       })
 
     if (await User.exists({ email }))
-      return responseReturn(res, 400, { error: 'User already exists' })
+      responseReturn(res, 400, { error: 'User already exists' })
 
     const handle: string = slug(rawHandle, '')
 
     if (await User.exists({ handle }))
-      return responseReturn(res, 409, { error: 'Handle already exists' })
+      responseReturn(res, 409, { error: 'Handle already exists' })
 
     const hashedPassword: string = await hashPassword(password)
 
@@ -46,11 +45,11 @@ export const createAccount = async (req: Request, res: Response) => {
 
     await user.save()
 
-    return responseReturn(res, 201, { message: 'User created' })
+    responseReturn(res, 201, { message: 'User created' })
   } catch (error) {
     console.error(`Error in createAccount: ${error}`)
 
-    return responseReturn(res, 500, { error: 'An unexpected error occurred' })
+    responseReturn(res, 500, { error: 'An unexpected error occurred' })
   }
 }
 
