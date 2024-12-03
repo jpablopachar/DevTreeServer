@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express from 'express'
-import { connectDB, corsConfig } from './config'
+import { corsConfig } from './config/cors'
+import { connectDB } from './config/db'
 import userRouter from './routes/user.routes'
 
 connectDB()

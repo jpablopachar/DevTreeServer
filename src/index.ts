@@ -1,5 +1,5 @@
 import { blue } from 'colors'
-import { PORT } from './config'
+import { PORT } from './config/variables'
 import server from './server'
 
 const port: string | number = PORT
